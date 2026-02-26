@@ -6,11 +6,6 @@ import pyautogui
 from pathlib import Path
 
 
-
-
-
-
-
 class AutoAccept:
 
     def __init__(self):
@@ -52,6 +47,8 @@ class AutoAccept:
             if (found):
                 time.sleep(13) # Accept match timer
                 matchAccepted = not(check_if_on_screen(self.IN_QUEUE)) and self.in_champselect()
+            else:
+                time.sleep(5)
 
     def in_champselect(self):
         print("champselect check")
@@ -82,9 +79,10 @@ class AutoAccept:
 
 
 def check_if_on_screen(src):
+    convertedSrc = str(src)
     try:
         print("Searching image on screen: ", end="")
-        pyautogui.locateOnScreen(src)
+        pyautogui.locateOnScreen(convertedSrc)
     except pyautogui.ImageNotFoundException:
         print("not on screen")
         return False
@@ -97,9 +95,10 @@ def check_if_on_screen(src):
 
 # returns wether it could or could not complete the action
 def click_if_on_screen(src):
+    convertedSrc = str(src)
     try:
         print ("Tring to click image: ", end="")
-        pyautogui.click(src)
+        pyautogui.click(convertedSrc)
     except pyautogui.ImageNotFoundException:
         print("not on screen")
         return False
