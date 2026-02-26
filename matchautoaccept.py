@@ -23,29 +23,29 @@ class AutoAccept:
 
         self.ACCEPT_MATCH = self.BASE_FULL / "accept_match.png"
         self.IN_QUEUE = self.BASE_FULL / "in_queue.png"
+
+        # the select emote icons are used to indentify the champselect
         self.SELECT_EMOTE = self.BASE_FULL / "select_emote.png"
         self.SELECT_EMOTE_GRAY = self.BASE_FULL / "select_emote_gray.png"
 
     # This MUST run at least once
     def detect_resolution(self): 
-        print("**detect resolution start**")
+        print("**detect resolution started**")
         for res in self.RESOLUTIONS:
-            for detect in self.DETECTION_IMG:
-                try:
-                    print("checking {0} - {1}".format(res, detect))
-                    check_if_on_screen(self.BASE / res / "detect" / detect)
-                except pyautogui.ImageNotFoundException:
-                    print("not found")
-                except FileNotFoundError:
-                    print("ref img missing")
-                else:
+            for detectImg in self.DETECTION_IMG:
+                print("checking {0} - {1}".format(res, detectImg))
+                isOnScreen = check_if_on_screen(self.BASE / res / "detect" / detectImg)
+                if (isOnScreen):
                     print("img found -> setting resolution")
                     return (self.BASE / res)
         print("resolution cant be detected -> defaulting to 1920x1080")
         return (self.BASE / "1920x1080")
+
+ 
  
  
     def match_accept_watcher(self):
+        print("**Match accept watcher started**")
         matchAccepted = False
         while (not matchAccepted):
             found = click_if_on_screen(self.ACCEPT_MATCH)
@@ -95,6 +95,7 @@ def check_if_on_screen(src):
         return True
     
 
+# returns wether it could or could not complete the action
 def click_if_on_screen(src):
     try:
         print ("Tring to click image: ", end="")
@@ -104,6 +105,7 @@ def click_if_on_screen(src):
         return False
     except FileNotFoundError:
         print("source not found")
+        return False
     else:
         print("action completed")
         return True
