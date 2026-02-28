@@ -14,7 +14,7 @@ class AutoAccept:
         self.BASE = Path("./img_ref/client")
         self.RESOLUTIONS = ["1024x576", "1280x720", "1600x900", "1920x1080"]
         self.DETECTION_IMG = ["play.png", "party_grey.png"]
-        self.BASE_FULL = self.detect_resolution() / "target"
+        self.BASE_FULL = self.detect_resolution() / "targets"
 
         self.ACCEPT_MATCH = self.BASE_FULL / "accept_match.png"
         self.IN_QUEUE = self.BASE_FULL / "in_queue.png"
