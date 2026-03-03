@@ -1,9 +1,11 @@
 # xhost +local:
 
 
+from sys import thread_info
 import time
 import pyautogui
 from pathlib import Path
+import threading 
 
 
 class AutoAccept:
@@ -23,6 +25,9 @@ class AutoAccept:
         self.SELECT_EMOTE = self.BASE_FULL / "select_emote.png"
         self.SELECT_EMOTE_GRAY = self.BASE_FULL / "select_emote_gray.png"
 
+        self.threadControl = threading.Event()
+        self.autoacceptThread = None
+
     # This MUST run at least once
     def detect_resolution(self): 
         print("**detect resolution started**")
@@ -36,13 +41,36 @@ class AutoAccept:
         print("resolution cant be detected -> defaulting to 1920x1080")
         return (self.BASE / "1920x1080")
 
- 
+    
+    
+
+    def create_autoaccept_no_champselect_thread(self):
+        if (self.autoacceptThread == None or not self.autoacceptThread.is_alive()):
+            self.threadControl.set()
+            self.autoacceptThread = threading.Thread(target=self.autoaccept_no_champselect_process)
+            self.autoacceptThread.start()
+            
+        
+    def stop_autoaccept_no_champselect_thread(self):
+        if (self.autoacceptThread != None and self.autoacceptThread.is_alive()):
+            self.threadControl.clear() 
+            self.autoacceptThread.join()
+
+    def join_autoaccept_no_champselect_thread(self):
+        if (self.autoacceptThread != None and self.autoacceptThread.is_alive()):
+            self.autoacceptThread.join()
+
+    def autoaccept_no_champselect_process(self):
+        matchStarted = False
+        while ((not matchStarted) and self.threadControl.is_set()):
+            self.match_accept_watcher()
+            matchStarted = self.champselect_dodge_guard()
  
  
     def match_accept_watcher(self):
         print("**Match accept watcher started**")
         matchAccepted = False
-        while (not matchAccepted):
+        while ((not matchAccepted) and (self.threadControl.is_set())):
             found = click_if_on_screen(self.ACCEPT_MATCH)
             if (found):
                 time.sleep(13) # Accept match timer
@@ -57,7 +85,7 @@ class AutoAccept:
 
     def champselect_dodge_guard(self): # returns True if the match has gone through or something else happened and False if dodged (and back in the Q)
         notDodged = True
-        while (notDodged):
+        while (notDodged and self.threadControl.is_set()):
             notDodged = self.in_champselect()
             time.sleep(5)
         time.sleep(5)
@@ -112,8 +140,5 @@ def click_if_on_screen(src):
 
 
 if __name__ == '__main__':
-    matchStarted = False
     app = AutoAccept()
-    while (not matchStarted):
-        app.match_accept_watcher()
-        matchStarted = app.champselect_dodge_guard()
+    app.create_autoaccept_no_champselect_thread()
