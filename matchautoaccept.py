@@ -47,7 +47,7 @@ class AutoAccept:
     def create_autoaccept_no_champselect_thread(self):
         if (self.autoacceptThread == None or not self.autoacceptThread.is_alive()):
             self.threadControl.set()
-            self.autoacceptThread = threading.Thread(target=self.autoaccept_no_champselect_process)
+            self.autoacceptThread = threading.Thread(target=self._autoaccept_no_champselect_process)
             self.autoacceptThread.start()
             
         
@@ -60,14 +60,14 @@ class AutoAccept:
         if (self.autoacceptThread != None and self.autoacceptThread.is_alive()):
             self.autoacceptThread.join()
 
-    def autoaccept_no_champselect_process(self):
+    def _autoaccept_no_champselect_process(self):
         matchStarted = False
         while ((not matchStarted) and self.threadControl.is_set()):
-            self.match_accept_watcher()
-            matchStarted = self.champselect_dodge_guard()
+            self._match_accept_watcher()
+            matchStarted = self._champselect_dodge_guard()
  
  
-    def match_accept_watcher(self):
+    def _match_accept_watcher(self):
         print("**Match accept watcher started**")
         matchAccepted = False
         while ((not matchAccepted) and (self.threadControl.is_set())):
@@ -83,7 +83,7 @@ class AutoAccept:
         return (check_if_on_screen(self.SELECT_EMOTE) or check_if_on_screen(self.SELECT_EMOTE_GRAY))
 
 
-    def champselect_dodge_guard(self): # returns True if the match has gone through or something else happened and False if dodged (and back in the Q)
+    def _champselect_dodge_guard(self): # returns True if the match has gone through or something else happened and False if dodged (and back in the Q)
         notDodged = True
         while (notDodged and self.threadControl.is_set()):
             notDodged = self.in_champselect()
