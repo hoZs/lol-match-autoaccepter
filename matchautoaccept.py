@@ -31,10 +31,11 @@ class AutoAccept:
     # This MUST run at least once
     def detect_resolution(self): 
         print("**detect resolution started**")
+        screenshot = pyautogui.screenshot()
         for res in self.RESOLUTIONS:
             for detectImg in self.DETECTION_IMG:
                 print("checking {0} - {1}".format(res, detectImg))
-                isOnScreen = check_if_on_screen(self.BASE / res / "detect" / detectImg)
+                isOnScreen = check_if_on_img(self.BASE / res / "detect" / detectImg, screenshot)
                 if (isOnScreen):
                     print("img found -> setting resolution")
                     return (self.BASE / res)
@@ -123,6 +124,34 @@ def check_if_on_screen(src):
     else:
         print("image found")
         return True
+    
+def check_if_on_img(src, img): # img is a pyautogui.screenshot()
+    convertedSrc = str(src)
+    try:
+        print("Searching image on screen: ", end="")
+        pyautogui.locate(convertedSrc, img)
+    except pyautogui.ImageNotFoundException:
+        print("not on screen")
+        return False
+    except FileNotFoundError:
+        print("source not found")
+    else:
+        print("image found")
+        return True
+    
+    
+def locate_center_on_screen(src):
+    convertedSrc = str(src)
+    try:
+        ceneterCoord = pyautogui.locateCenterOnScreen()
+    except pyautogui.ImageNotFoundException:
+        print("not on screen")
+        return None
+    except FileNotFoundError:
+        print("source not found")
+    else:
+        print("image found")
+        return ceneterCoord
     
 
 # returns wether it could or could not complete the action
