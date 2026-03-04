@@ -9,13 +9,16 @@ class AutoAcceptGui:
         self.window = root
         self.window.title("Match autoaccept")
 
-        self.width, self.height = 300, 150
+        self.width, self.height = 300, 200
         self.x = (root.winfo_screenwidth() // 2) - (self.width // 2)
         self.y = (root.winfo_screenheight() // 2) - (self.height // 2)
         root.geometry(f'{self.width}x{self.height}+{self.x}+{self.y}')
 
 
         self.isRunning = False
+
+        self.resolutionResetButton = tk.Button(self.window, text="Resolution reset", command=self.process.detect_resolution, width=11, font=("Arial", 10))
+        self.resolutionResetButton.pack(pady=10)
 
         self.startStopButton = tk.Button(self.window, text="Start", command=self.start_stop_process, width=15, font=("Arial", 12))
         self.startStopButton.pack(pady=20)
